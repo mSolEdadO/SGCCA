@@ -11,7 +11,7 @@ This is an extract of the scripts in step 4. The idea is to illustrate graph con
 
 Run in the same folder than subtype.eigeNormi & the enrichment results
 
-Rscript get_matrix <GO:0007156> Basal
+Rscript [get_matrix.R](https://github.com/CSB-IG/SGCCA/blob/main/get_matrix.R) <GO:0007156> Basal → <GO:0007156.Basal.mtrx>
 
 ```{r}
 suppressPackageStartupMessages({library(tidyverse)})
@@ -49,6 +49,14 @@ data[1:3,1:3]
 
 ## 2. Run ARACNE with obtained matrix
 
+<https://github.com/CSB-IG/ARACNE-multicore>
+
+run.sh file was adjusted to the matrix names changing:
+
+line 12 → nom=\$(echo \$ftsv \| cut -d'.' -f 1,2)
+
+line 23 → n=\$( (cd adj; ls) \| head -1 \| cut -d'.' -f 3 )
+
 ```{bash}
 mv GO\:0007156.Basal.mtrx ARACNE-multicore-master/launch/
 cd ARACNE-multicore-master/launch/
@@ -62,7 +70,7 @@ If something fails probably is due to an incorrect parsing of the parameters to 
 
 ## 3. Keep just the edges with MI above a threshold that is specific for the edge type
 
-Rscript MIfilter.R <GO:0007156.Basal.sort> → <GO:0007156.Basal.filtered.alt>
+Rscript [MIfilter.R](https://github.com/CSB-IG/SGCCA/blob/main/MIfilter.R) <GO:0007156.Basal.sort> → <GO:0007156.Basal.filtered.alt>
 
 If ARACNE MI distributions are not significantly different MIfilter.R outuputs file.filtered & file.filtered.alt.
 
@@ -79,13 +87,13 @@ Run in the same folder than the results of differential expression/methylation &
 
 Also Cytoscape has to be already open
 
-Rscript plotGraph.R <GO:0007156.Basal.filtered.alt>
+Rscript [plotGraph.R](https://github.com/CSB-IG/SGCCA/blob/main/plotGraph.R) <GO:0007156.Basal.filtered.alt> → <GO:0007156.Basal.cys>
 
 ## 5. Get info about the nodes and edges ploted
 
 Cytoscape has to be already open
 
-Rscript annotateGraph.R <GO:0007156.Basal.cys>
+Rscript [annotateGraph.R](https://github.com/CSB-IG/SGCCA/blob/main/annotateGraph.R) <GO:0007156.Basal.cys>
 
 ```{r}
 suppressPackageStartupMessages(library(igraph))

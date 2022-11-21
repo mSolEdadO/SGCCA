@@ -1632,8 +1632,8 @@ in the SGCCA</p>
 the function is over-represented</h2>
 <p>Run in the same folder than subtype.eigeNormi &amp; the enrichment
 results</p>
-<p>Rscript get_matrix <a href="GO:0007156" class="uri">GO:0007156</a>
-Basal</p>
+<p>Rscript <a href="https://github.com/CSB-IG/SGCCA/blob/main/get_matrix.R">get_matrix.R</a>
+<a href="GO:0007156" class="uri">GO:0007156</a> Basal → <a href="GO:0007156.Basal.mtrx" class="uri">GO:0007156.Basal.mtrx</a></p>
 <pre class="r"><code>suppressPackageStartupMessages({library(tidyverse)})
 
 fun=&quot;GO:0007156&quot;#args[1]
@@ -1676,6 +1676,10 @@ data[1:3,1:3]</code></pre>
 </div>
 <div id="run-aracne-with-obtained-matrix" class="section level2">
 <h2>2. Run ARACNE with obtained matrix</h2>
+<p><a href="https://github.com/CSB-IG/ARACNE-multicore" class="uri">https://github.com/CSB-IG/ARACNE-multicore</a></p>
+<p>run.sh file was adjusted to the matrix names changing:</p>
+<p>line 12 → nom=$(echo $ftsv | cut -d’.’ -f 1,2)</p>
+<p>line 23 → n=$( (cd adj; ls) | head -1 | cut -d’.’ -f 3 )</p>
 <pre class="bash"><code>mv GO\:0007156.Basal.mtrx ARACNE-multicore-master/launch/
 cd ARACNE-multicore-master/launch/
 bash run.sh GO\:0007156.Basal.mtrx
@@ -1708,7 +1712,9 @@ column index name</p>
 <div id="keep-just-the-edges-with-mi-above-a-threshold-that-is-specific-for-the-edge-type" class="section level2">
 <h2>3. Keep just the edges with MI above a threshold that is specific
 for the edge type</h2>
-<p>Rscript MIfilter.R <a href="GO:0007156.Basal.sort" class="uri">GO:0007156.Basal.sort</a> → <a href="GO:0007156.Basal.filtered.alt" class="uri">GO:0007156.Basal.filtered.alt</a></p>
+<p>Rscript <a href="https://github.com/CSB-IG/SGCCA/blob/main/MIfilter.R">MIfilter.R</a>
+<a href="GO:0007156.Basal.sort" class="uri">GO:0007156.Basal.sort</a> →
+<a href="GO:0007156.Basal.filtered.alt" class="uri">GO:0007156.Basal.filtered.alt</a></p>
 <p>If ARACNE MI distributions are not significantly different MIfilter.R
 outuputs file.filtered &amp; file.filtered.alt.</p>
 <p>file.filtered.alt uses a single threshold no matter the edge type</p>
@@ -1725,12 +1731,14 @@ head(edges)</code></pre>
 <p>Run in the same folder than the results of differential
 expression/methylation &amp; the file mapping CpG probes to genes</p>
 <p>Also Cytoscape has to be already open</p>
-<p>Rscript plotGraph.R <a href="GO:0007156.Basal.filtered.alt" class="uri">GO:0007156.Basal.filtered.alt</a></p>
+<p>Rscript <a href="https://github.com/CSB-IG/SGCCA/blob/main/plotGraph.R">plotGraph.R</a>
+<a href="GO:0007156.Basal.filtered.alt" class="uri">GO:0007156.Basal.filtered.alt</a> → <a href="GO:0007156.Basal.cys" class="uri">GO:0007156.Basal.cys</a></p>
 </div>
 <div id="get-info-about-the-nodes-and-edges-ploted" class="section level2">
 <h2>5. Get info about the nodes and edges ploted</h2>
 <p>Cytoscape has to be already open</p>
-<p>Rscript annotateGraph.R <a href="GO:0007156.Basal.cys" class="uri">GO:0007156.Basal.cys</a></p>
+<p>Rscript <a href="https://github.com/CSB-IG/SGCCA/blob/main/annotateGraph.R">annotateGraph.R</a>
+<a href="GO:0007156.Basal.cys" class="uri">GO:0007156.Basal.cys</a></p>
 <pre class="r"><code>suppressPackageStartupMessages(library(igraph))
 library(RCy3)
 

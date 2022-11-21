@@ -1,7 +1,8 @@
 ---
 title: "Analysis of SGCCA results"
 output:
-  pdf_document: default
+  html_document:
+    df_print: paged
   html_notebook: default
 ---
 
@@ -9,7 +10,7 @@ This is an extract of the scripts in steps 3 to produce the figures before secti
 
 # 1. Check stability
 
-selectedFeatures.R → supplementary figure 3, Basal.stable, Her2.stable, ...
+[selectedFeatures.R](https://github.com/CSB-IG/SGCCA/blob/main/selectedFeatures.R) → supplementary figure 3, Basal.stable, Her2.stable, ...
 
 ```{r}
 suppressPackageStartupMessages({
@@ -83,13 +84,13 @@ scale_fill_manual(values=c("gray47","brown1"))
 
 # 2. Functional enrichment (over-representation)
 
-functions_overrepre.R → BP.enrich, KEGG.enrich
+[functions_overrepre.R](https://github.com/CSB-IG/SGCCA/blob/main/functions_overrepre.R) → BP.enrich, KEGG.enrich
 
 #slow lines, tend to die
 
 # 3. Compare the sets of enriched functions
 
-functions_overrepre_plots.R L1-L29 → figure 2
+[functions_overrepre_plots.R](https://github.com/CSB-IG/SGCCA/blob/main/functions_overrepre_plots.R) L1-L29 → figure 2
 
 ```{r}
 library(UpSetR)
@@ -113,7 +114,7 @@ lapply(functions,function(x) upset(fromList(x),text.scale=1.5,order.by="degree")
 
 # 3. Check if the categories of biological processes are over-represented
 
-functions_overrepre_plots.R L32-L127 → figure 3B
+[functions_overrepre_plots.R](https://github.com/CSB-IG/SGCCA/blob/main/functions_overrepre_plots.R) L32-L127 → figure 3B
 
 ```{r}
 suppressPackageStartupMessages({
@@ -192,7 +193,7 @@ annotate("text",y=i,x=-.05,label="*",size=8,vjust=.8)
 
 # 4. Group the functions that are over-represented in the same SGCCA components
 
-functions_overrepre_groups.R → Groups_per_component.tsv, Figure 4
+[functions_overrepre_groups.R](https://github.com/CSB-IG/SGCCA/blob/main/functions_overrepre_groups.R) → Groups_per_component.tsv, Figure 4
 
 ```{r}
 suppressPackageStartupMessages({
@@ -216,44 +217,18 @@ coenriched$Basal[1:3,1:3]
 ```{r}
 #don't forget 1-x to have identical sets together
 trees=lapply(coenriched,function(x) hclust(as.dist(1-x)))
-#groups=lapply(trees,function(x) cutree(x,h=0))
-#groups=do.call(rbind,lapply(1:5,function(y) 
-#	data.frame(cbind("subtype"=unique(enriched$BP$subtype)[y],
-#					 "Description"=names(groups[[y]]),
-#					 "group"=groups[[y]]))))
+groups=lapply(trees,function(x) cutree(x,h=0))
+groups=do.call(rbind,lapply(1:5,function(y) 
+	data.frame(cbind("subtype"=unique(enriched$BP$subtype)[y],
+					 "Description"=names(groups[[y]]),
+					 "group"=groups[[y]]))))
 #write_tsv(groups,"Groups_per_component.tsv")
-temp=ape::as.phylo(trees$Her2)
-ig=ape::as.igraph.phylo(temp,FALSE)
-ig=set_edge_attr(ig,"distance",value=temp$edge.length)
-
-groups=read_tsv("Groups_per_component.tsv",show_col_types = FALSE)
-groups=groups%>%filter(subtype=="Her2")
-groups=left_join(data.frame(Description=V(ig)$name),groups,by="Description")
-V(ig)$color=groups$group#set color to group manually, wont work automatically
-
-sizes=do.call(rbind,enriched)
-sizes=sizes%>%filter(subtype=="Her2")%>%dplyr::select(subtype,Description,geneID)%>%
-  separate_rows(geneID,sep="/",convert = T)%>%distinct()%>%count(subtype,Description)
-sizes=left_join(data.frame(Description=V(ig)$name),sizes,by="Description")
-V(ig)$size=sizes$n
-
-createNetworkFromIgraph(ig)
-setNodeSizeMapping(table.column="size",
-    mapping.type="continuous",
-    table.column.values=range(V(ig)$size),
-    sizes=c(30,100))#fix it by hand
-
-createColumnFilter('junctions', 'id', "^Node\\\\d+$", "REGEX")
-junctions<-getSelectedNodes()
-setNodeWidthBypass(junctions,1)
-setNodeHeightBypass(junctions,1)
-setNodeLabelBypass(junctions, "")
-#organic layout
+head(groups)
 ```
 
 ## 5. Check the feature similarity between two subtypes (or the normal tissue) with over-representation of the same function
 
-functionsJaccard.R → funcJaccI.tsv, figure 3A
+[functionsJaccard.R](https://github.com/CSB-IG/SGCCA/blob/main/functionsJaccard.R) → funcJaccI.tsv, figure 3A
 
 ```{r}
 features=lapply(enriched,function(x) 
@@ -311,10 +286,4 @@ ggrepel::geom_text_repel(data=temp,
 ylab("")+xlab("jaccard index")+geom_vline(xintercept=0.5,
 	color="firebrick")
 #dev.off()
-```
-
-Packages used
-
-```{r}
-read_tsv("pkgs.tsv")%>%data.frame
 ```
